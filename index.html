@@ -1,0 +1,78 @@
+<html>
+
+<head>
+    <title>Simple API rendering</title>
+    <scrip src="./script.js">
+        </script>
+        <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div id="navbar"
+        style="display:flex; flex-wrap: wrap;  align-items: center; justify-content: center; width: 100%; height: 100px;background-color: bisque;">
+        <Button class="navButton" onclick="getSpecificTypeData('ranked')">Top Rated </Button>
+        <Button class="navButton" onclick="getSpecificTypeData('popularity')">Most Popular</Button>
+        <Button class="navButton" onclick="getSpecificTypeData('status')">Status</Button>
+        <Button class="navButton" onclick="getSpecificTypeData('aired_on')">Release Date</Button>
+
+    </div>
+    <div style="display: flex; flex-direction: column; align-items: center; margin-bottom: 50px;">
+        <div id="apiData" style="display: flex;flex-wrap: wrap; justify-content: center;margin: 50px;"></div>
+        <Button id="loadMore" onclick="getMoreData()" style="height: 50px;background-color: aquamarine;">Load
+            More</Button>
+    </div>
+
+    <script>
+        var pageNum = 1
+        async function getSpecificTypeData(type) {
+            pageNum = 1
+            document.getElementById("apiData").innerHTML = ''
+            getMoreData(type)
+        }
+        async function getMoreData(order = "") {
+            data = await fetch(`https://shikimori.one/api/animes?limit=10&page=${pageNum}&order=${order}`)
+            data = await data.json()
+            dataToBeRendered = document.getElementById("apiData").innerHTML
+            console.log(pageNum, data)
+            data.forEach(element => {
+                imgURL = element.image.original
+                animeName = element.name
+                score = element.score
+                kind = element.kind
+                status = element.status
+                episodes = element.episodes
+                episodes_aired = element.episodes_aired
+                aired_on = element.aired_on
+                released_on = element.released_on
+                animeUrl = element.url
+
+                dataSample = `<div class="flip-card" style="width:300px;height:400px;margin:10px; ">
+                                <div class="flip-card-inner" style="background-color: bisque;">
+                                    <div class="flip-card-front">
+                                        <img src="https://shikimori.one/${imgURL}" alt="Avatar"
+                                            style="width:300px;height:300px;">
+                                        <h3>${animeName}</h3>
+                                    </div>
+                                        <div class="flip-card-back">
+                                            <h3>score:${score}</h3>
+                                            <h3>kind:${kind}</h3>
+                                            <h3>status:${status}</h3>
+                                            <h3>episodes:${episodes}</h3>
+                                            <h3>episodes_aired:${episodes_aired}</h3>
+                                            <h3>aired_on:${aired_on}</h3>
+                                            <h3>released_on:${released_on}</h3>
+                                            <a href="https://shikimori.one/${animeUrl}">More info!</a>
+                                        </div>
+                                    </div>    
+                             </div>`
+                dataToBeRendered += dataSample
+
+            });
+            document.getElementById("apiData").innerHTML = dataToBeRendered
+            pageNum += 1
+        }
+        getMoreData()
+    </script>
+</body>
+
+</html>
